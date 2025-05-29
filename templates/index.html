@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>🌐 Azure Translator Web App</title>
+    <style>
+        /* Your existing styles here, unchanged */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background: #f4f6f8;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+            margin: 0 auto 2rem;
+            gap: 1rem;
+        }
+        select, textarea, button, input[type=file] {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            resize: vertical;
+            width: 100%;
+        }
+        button {
+            background: #0078d4;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #005a9e;
+        }
+        .container {
+            display: flex;
+            gap: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        textarea {
+            height: 300px;
+            font-size: 1.1rem;
+            line-height: 1.4;
+            background: white;
+            box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+        }
+        .box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        .download-btn {
+            margin-top: 0.5rem;
+            align-self: flex-start;
+            /* Keep existing styling, no changes needed */
+        }
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Flash messages styles */
+        .flashes {
+            list-style: none;
+            padding: 0;
+            max-width: 900px;
+            margin: 1rem auto;
+        }
+        .flashes li.error {
+            color: red;
+            font-weight: bold;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌍 Azure Translator Web App</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/" enctype="multipart/form-data">
+        <label for="language">Choose target language:</label>
+        <select name="language" id="language" required>
+            {% for code, name in languages.items() %}
+            <option value="{{ code }}" {% if code == selected_lang %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="input_text">📝 Enter text or upload a file:</label>
+        <textarea id="input_text" name="input_text" placeholder="Type your text here...">{{ original_text }}</textarea>
+        
+        <input type="file" name="file" accept=".txt" />
+
+        <button type="submit">Translate ▶️</button>
+    </form>
+
+    <div class="container">
+        <div class="box">
+            <label for="original">📝 Original Text:</label>
+            <textarea id="original" readonly>{{ original_text }}</textarea>
+        </div>
+        <div class="box">
+            <label for="translated">🌐 Translated Text:</label>
+            <textarea id="translated" readonly>{{ translated_text }}</textarea>
+            {% if translated_text %}
+            <a href="{{ url_for('download_file', filename=translated_filename) }}?text={{ translated_text | urlencode }}" class="download-btn">
+                ⬇️ Download Translation
+            </a>            
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>Made with 💙 by Maryem Mohamed</footer>
+</body>
+</html>
+
+
